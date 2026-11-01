@@ -1,0 +1,4 @@
+id,nome,tipo,cidade,comissao_pct,taxa_pgto_pct,prazo_repasse_d,saldo_inicial
+1,Brasa Burger,hamburgueria,Belo Horizonte,0.23,0.032,2,15000.0
+2,Marmita da Lu,marmitaria,Belo Horizonte,0.23,0.032,2,12800.0
+3,Forno Pampulha,pizzaria,Belo Horizonte,0.23,0.032,2,15000.0

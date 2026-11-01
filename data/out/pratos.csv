@@ -1,0 +1,17 @@
+id,restaurante_id,nome,categoria,preco,custo_unitario
+101,1,Smash Clássico,burger,34.9,12.8
+102,1,Bacon Duplo,burger,42.9,17.5
+103,1,Veggie Grão,burger,36.9,13.9
+104,1,Combo Duplo (2 burgers + fritas + 2 bebidas),combo,79.9,41.0
+105,1,Fritas Rústicas,acompanhamento,18.9,4.2
+106,1,Milkshake,bebida,21.9,6.8
+201,2,Marmita Executiva Frango,marmita,24.9,9.1
+202,2,Marmita Executiva Carne,marmita,27.9,11.4
+203,2,Marmita Fit,marmita,29.9,11.9
+204,2,Feijoada (sábado),marmita,34.9,14.2
+205,2,Suco Natural,bebida,9.9,2.6
+301,3,Pizza Margherita G,pizza,59.9,18.5
+302,3,Pizza Calabresa G,pizza,62.9,19.8
+303,3,Pizza Quatro Queijos G,pizza,72.9,26.4
+304,3,Pizza Doce Brigadeiro M,pizza,44.9,13.1
+305,3,Refrigerante 2L,bebida,15.9,7.2

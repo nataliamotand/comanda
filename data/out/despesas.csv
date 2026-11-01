@@ -1,0 +1,88 @@
+id,restaurante_id,data,categoria,descricao,valor,agendada
+1,1,2026-08-05,aluguel,aluguel 08/2026,4000.0,False
+2,1,2026-08-05,folha,folha 08/2026,4500.0,False
+3,1,2026-08-10,energia,energia 08/2026,843.46,False
+4,1,2026-08-20,folha,folha 08/2026,1800.0,False
+5,1,2026-09-05,aluguel,aluguel 09/2026,4000.0,False
+6,1,2026-09-05,folha,folha 09/2026,4500.0,False
+7,1,2026-09-10,energia,energia 09/2026,977.82,False
+8,1,2026-09-20,folha,folha 09/2026,1800.0,False
+9,1,2026-10-05,aluguel,aluguel 10/2026,4000.0,False
+10,1,2026-10-05,folha,folha 10/2026,4500.0,False
+11,1,2026-10-10,energia,energia 10/2026,889.67,False
+12,1,2026-10-20,folha,folha 10/2026,1800.0,False
+13,1,2026-11-05,aluguel,aluguel 11/2026,4000.0,True
+14,1,2026-11-05,folha,folha 11/2026,4500.0,True
+15,1,2026-11-10,energia,energia 11/2026,875.07,True
+16,1,2026-11-20,folha,folha 11/2026,1800.0,True
+17,1,2026-08-10,insumos,insumos semana 03/08,6166.1,False
+18,1,2026-08-17,insumos,insumos semana 10/08,5474.4,False
+19,1,2026-08-24,insumos,insumos semana 17/08,5431.5,False
+20,1,2026-08-31,insumos,insumos semana 24/08,5103.8,False
+21,1,2026-09-07,insumos,insumos semana 31/08,5761.4,False
+22,1,2026-09-14,insumos,insumos semana 07/09,8942.4,False
+23,1,2026-09-21,insumos,insumos semana 14/09,8229.6,False
+24,1,2026-09-28,insumos,insumos semana 21/09,8436.0,False
+25,1,2026-10-05,insumos,insumos semana 28/09,8403.7,False
+26,1,2026-10-12,insumos,insumos semana 05/10,9130.0,False
+27,1,2026-10-19,insumos,insumos semana 12/10,8735.3,False
+28,1,2026-10-26,insumos,insumos semana 19/10,8628.9,False
+29,1,2026-11-02,insumos,insumos semana 26/10,6152.6,True
+30,2,2026-08-05,aluguel,aluguel 08/2026,3800.0,False
+31,2,2026-08-05,folha,folha 08/2026,6200.0,False
+32,2,2026-08-10,energia,energia 08/2026,825.36,False
+33,2,2026-08-20,folha,folha 08/2026,3200.0,False
+34,2,2026-09-05,aluguel,aluguel 09/2026,3800.0,False
+35,2,2026-09-05,folha,folha 09/2026,6200.0,False
+36,2,2026-09-10,energia,energia 09/2026,929.72,False
+37,2,2026-09-20,folha,folha 09/2026,3200.0,False
+38,2,2026-10-05,aluguel,aluguel 10/2026,3800.0,False
+39,2,2026-10-05,folha,folha 10/2026,6200.0,False
+40,2,2026-10-10,energia,energia 10/2026,870.89,False
+41,2,2026-10-20,folha,folha 10/2026,3200.0,False
+42,2,2026-11-05,aluguel,aluguel 11/2026,3800.0,True
+43,2,2026-11-05,folha,folha 11/2026,6200.0,True
+44,2,2026-11-10,energia,energia 11/2026,936.42,True
+45,2,2026-11-20,folha,folha 11/2026,3200.0,True
+46,2,2026-08-10,insumos,insumos semana 03/08,3617.3,False
+47,2,2026-08-17,insumos,insumos semana 10/08,3459.4,False
+48,2,2026-08-24,insumos,insumos semana 17/08,3546.0,False
+49,2,2026-08-31,insumos,insumos semana 24/08,3792.9,False
+50,2,2026-09-07,insumos,insumos semana 31/08,3677.7,False
+51,2,2026-09-14,insumos,insumos semana 07/09,3295.3,False
+52,2,2026-09-21,insumos,insumos semana 14/09,3707.6,False
+53,2,2026-09-28,insumos,insumos semana 21/09,3733.8,False
+54,2,2026-10-05,insumos,insumos semana 28/09,3894.2,False
+55,2,2026-10-12,insumos,insumos semana 05/10,3777.4,False
+56,2,2026-10-19,insumos,insumos semana 12/10,3043.6,False
+57,2,2026-10-26,insumos,insumos semana 19/10,3637.5,False
+58,2,2026-11-02,insumos,insumos semana 26/10,3492.8,True
+59,3,2026-08-05,aluguel,aluguel 08/2026,5200.0,False
+60,3,2026-08-05,folha,folha 08/2026,8200.0,False
+61,3,2026-08-10,energia,energia 08/2026,2745.96,False
+62,3,2026-08-20,folha,folha 08/2026,3500.0,False
+63,3,2026-09-05,aluguel,aluguel 09/2026,5200.0,False
+64,3,2026-09-05,folha,folha 09/2026,8200.0,False
+65,3,2026-09-10,energia,energia 09/2026,2375.62,False
+66,3,2026-09-20,folha,folha 09/2026,3500.0,False
+67,3,2026-10-05,aluguel,aluguel 10/2026,5200.0,False
+68,3,2026-10-05,folha,folha 10/2026,8200.0,False
+69,3,2026-10-10,energia,energia 10/2026,2342.19,False
+70,3,2026-10-20,folha,folha 10/2026,3500.0,False
+71,3,2026-11-05,aluguel,aluguel 11/2026,5200.0,True
+72,3,2026-11-05,folha,folha 11/2026,8200.0,True
+73,3,2026-11-10,energia,energia 11/2026,2547.47,True
+74,3,2026-11-20,folha,folha 11/2026,3500.0,True
+75,3,2026-08-10,insumos,insumos semana 03/08,5405.5,False
+76,3,2026-08-17,insumos,insumos semana 10/08,6243.6,False
+77,3,2026-08-24,insumos,insumos semana 17/08,6025.3,False
+78,3,2026-08-31,insumos,insumos semana 24/08,6434.9,False
+79,3,2026-09-07,insumos,insumos semana 31/08,6189.6,False
+80,3,2026-09-14,insumos,insumos semana 07/09,5747.8,False
+81,3,2026-09-21,insumos,insumos semana 14/09,6204.5,False
+82,3,2026-09-28,insumos,insumos semana 21/09,6345.7,False
+83,3,2026-10-05,insumos,insumos semana 28/09,6213.8,False
+84,3,2026-10-12,insumos,insumos semana 05/10,5591.1,False
+85,3,2026-10-19,insumos,insumos semana 12/10,6069.7,False
+86,3,2026-10-26,insumos,insumos semana 19/10,6280.1,False
+87,3,2026-11-02,insumos,insumos semana 26/10,4587.1,True
