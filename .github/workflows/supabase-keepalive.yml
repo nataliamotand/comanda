@@ -1,0 +1,25 @@
+# Mantém o projeto gratuito do Supabase ativo (ele pausa após ~7 dias sem uso),
+# para que o dashboard público continue funcionando.
+# Faz uma leitura simples, 1x por dia, com a chave pública (anon), que só lê.
+name: Supabase keepalive
+
+on:
+  schedule:
+    - cron: "17 9 * * *"   # todo dia, 09:17 UTC
+  workflow_dispatch:        # permite rodar manualmente na aba Actions
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ler 1 linha da tabela de restaurantes
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
+            "$SUPABASE_URL/rest/v1/restaurantes?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+          echo "HTTP $status"
+          test "$status" = "200"
