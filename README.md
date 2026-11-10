@@ -2,7 +2,9 @@
 
 > Agente de IA que mostra ao dono de restaurante **quanto ele lucrou de verdade**, **quando o caixa vai apertar** e **o que fazer a respeito**, sem ele precisar abrir uma planilha.
 
-**Status:** em construção (MVP: nov/2026) · dados 100% sintéticos · taxas ilustrativas
+**Status:** MVP no ar (nov/2026) · dados 100% sintéticos · taxas ilustrativas
+
+**▶ Dashboard ao vivo:** https://v0-comanda-dashboard.vercel.app · **💬 Agente no Telegram:** [@comanda_natalia_bot](https://t.me/comanda_natalia_bot)
 
 ---
 
@@ -24,7 +26,7 @@ O resultado são decisões no escuro e a busca por crédito só quando já é ta
 | **API para o agente** | Cada view vira um endpoint REST que o agente consulta como ferramenta | Supabase REST (sem backend próprio) |
 | **Agente conversacional** | O dono pergunta em linguagem natural ("quanto lucrei no fim de semana?") e o agente consulta as ferramentas antes de responder | n8n AI Agent + Groq (`gpt-oss-120b`) |
 | **Automação semanal** | Toda segunda: lê as métricas, gera um diagnóstico com até 3 ações priorizadas e envia ao dono | n8n (cron) + Groq + Telegram |
-| **Dashboard** | Painel com margem por prato, promoções e o gráfico de caixa projetado | Vibe coding (v0/Lovable/Cursor) + Vercel |
+| **Dashboard** | Painel com margem por prato, promoções e o gráfico de caixa projetado | Vibe coding no v0 + Vercel, lendo as views do Supabase com a chave pública (só leitura) |
 | **Loop de feedback** | O dono marca cada recomendação como útil/não útil; isso alimenta a melhoria dos prompts | Tabela `feedback_recomendacoes` |
 
 ### A comanda da semana
@@ -121,7 +123,6 @@ Teste local com Postgres: `./reload.sh`.
 - [x] Workflows do n8n prontos para importar (`n8n/`)
 - [x] Agente n8n + Groq com 6 ferramentas, rodando no Telegram
 - [x] Relatório semanal automático (n8n, toda segunda 8h → Telegram)
-- [ ] Dashboard publicado
+- [x] Dashboard publicado (v0 + Vercel)
 - [ ] Evals: 20 perguntas com gabarito SQL, acurácia medida
 - [ ] Medição de tempo: fechamento manual em planilha × agente
-- [ ] Vídeo-demo (2 min)
