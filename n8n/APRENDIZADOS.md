@@ -11,5 +11,9 @@ Testes manuais no Telegram com as 3 perguntas dos padrões plantados. Cada falha
 | 5 | Repetiu a resposta errada mesmo depois do prompt corrigido | A memória da conversa guardava a resposta antiga | Versionar a chave de sessão da memória a cada mudança de prompt |
 | 6 | Bot ficou mudo | Limite de tokens por minuto do plano gratuito do Groq | Retry automático (3 tentativas, 5 s) e janela de memória menor (10 → 4) |
 | 7 | Relatório semanal com datas em ISO, números sem formato e dia trocado no alerta de caixa | O LLM reformatava números crus | O código entrega os fatos já formatados (R$, dd/mm, período); a IA só copia e explica |
+| 8 | Nos evals (rodada 1), 8 de 12 respostas tinham contas ou cenários inventados nas ações | O padrão estava nas recomendações, não no diagnóstico | Ações qualitativas, sem percentuais, metas ou contas; só quando há problema |
+| 9 | Citou para a Brasa Burger uma saída de caixa da Marmita da Lu | A memória da conversa contaminou a resposta | Só citar números de ferramentas chamadas para a pergunta atual |
+| 10 | Trocou quinta por quarta | O prompt do agente não explicava a codificação `dia_semana` (1 = segunda) | Mapa explícito no prompt; lição: documentar para o modelo o significado de cada código |
+| 11 | Cota diária do Groq esgotada no meio dos testes | 200 mil tokens/dia no plano gratuito | Espaçar testes; registrar a limitação no README |
 
-Pendentes para os evals: o agente não percebeu que o caixa da Marmita da Lu se recupera em 11/11 (descompasso de datas, não falta de dinheiro); sugeriu "negociar taxa de cancelamento da plataforma", que não existe nos dados.
+Resolvidos na rodada 2: o agente passou a ver a recuperação do caixa da Marmita da Lu em 11/11.

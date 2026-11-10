@@ -93,6 +93,18 @@ LLMs erram contas. Em finanças, um número inventado é inaceitável. Por isso:
 3. **Recomendações são apoio à decisão**, sempre com o cálculo visível.
 4. **Avaliação objetiva (evals):** as respostas do agente são comparadas com um gabarito calculado em SQL.
 
+## Evals: medindo o agente contra um gabarito
+
+12 perguntas com resposta conhecida, tirada das views SQL, incluindo uma armadilha de alucinação ("quanto sobrou depois do aluguel?", dado que não existe) e uma pergunta fora do escopo. Cada resposta é avaliada em 3 critérios. Detalhes por pergunta em [`evals/perguntas.md`](evals/perguntas.md).
+
+| Critério | Rodada 1 (prompt v4) | Rodada 2 (prompt v5) |
+|---|---|---|
+| Números do diagnóstico corretos | 12/12 | 11/12 |
+| **Zero número inventado** | **4/12** | **12/12** |
+| Interpretação correta | 7/12 | 9/12 |
+
+O que a rodada 1 revelou: o agente buscava os números com precisão, mas **inventava contas e cenários ao sugerir ações** ("reduzir 5% economizaria ≈ R$ 500" — conta errada), tirava conclusões que os próprios dados contradiziam e, em um caso, **trouxe da memória um valor de outro restaurante**. O prompt v5 tornou as ações qualitativas, limitou os números aos de ferramentas chamadas na pergunta atual e explicitou regras de interpretação. O v6 corrigiu os 3 erros restantes (mapa do dia da semana, uso de "por unidade", o que é taxa "alta"); na rodada 3, as perguntas refeitas passaram.
+
 ## Por que isso importa para uma plataforma de delivery
 
 Hipóteses de produto que o protótipo ilustra (não resultados medidos):
@@ -169,12 +181,12 @@ Teste local com Postgres: `./reload.sh`.
 - [x] Relatório semanal automático (n8n, toda segunda 8h → Telegram)
 - [x] Dashboard publicado (v0 + Vercel)
 - [x] Despertador diário do Supabase (GitHub Actions) para o dashboard não sair do ar
-- [ ] Evals: 12 perguntas com gabarito SQL ([`evals/perguntas.md`](evals/perguntas.md)) — rodada em andamento
+- [x] Evals: 12 perguntas com gabarito SQL, 3 rodadas ([`evals/perguntas.md`](evals/perguntas.md))
 - [ ] Interface de feedback do dono sobre as recomendações
 
 ## Limitações conhecidas
 
-- **Plano gratuito do Groq:** cerca de 8 mil tokens por minuto. Perguntas seguidas podem estourar o limite; o workflow tenta de novo automaticamente, mas o ideal é espaçar as perguntas.
+- **Plano gratuito do Groq:** 8 mil tokens por minuto e 200 mil por dia para o `gpt-oss-120b`. Cada pergunta faz várias chamadas ao modelo, de cerca de 2,7 mil tokens cada (prompt + resultados das ferramentas), então perguntas seguidas estouram o limite por minuto e uma sessão longa de testes esgota a cota diária. O workflow tenta de novo automaticamente, mas o ideal é espaçar as perguntas.
 - **Dados sintéticos** e **taxas ilustrativas**: o objetivo é demonstrar a arquitetura e o método, não descrever um restaurante real.
 - **Agente no n8n Cloud (trial):** pode estar desligado; os workflows estão em `n8n/` para importar em qualquer instância.
 - O agente ainda erra em pontos documentados em [`n8n/APRENDIZADOS.md`](n8n/APRENDIZADOS.md), principalmente ao sugerir ações (tende a fazer contas por conta própria).
