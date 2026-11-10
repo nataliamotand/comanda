@@ -1,0 +1,324 @@
+{
+  "name": "Comanda · Relatório semanal",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "3c066bed-7d50-4629-b9cf-fa1727b5c2ad",
+      "name": "Testar agora",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "00860bc1-8f09-4fd5-bc5a-b543ee4673a9",
+      "name": "Toda segunda 8h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://joxdvvthdsilnuyriigh.supabase.co/rest/v1/v_resumo_semanal",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "order",
+              "value": "semana.desc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "14f13f93-bbc7-41c9-8560-bb7a243eaf84",
+      "name": "Resumo semanal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        100
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "url": "https://joxdvvthdsilnuyriigh.supabase.co/rest/v1/v_alerta_caixa",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": false,
+        "queryParameters": {
+          "parameters": []
+        },
+        "options": {}
+      },
+      "id": "12ad104d-0e00-4f67-b5ab-b858ad008a11",
+      "name": "Alerta de caixa",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        100
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "url": "https://joxdvvthdsilnuyriigh.supabase.co/rest/v1/v_promocao_resultado",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": false,
+        "queryParameters": {
+          "parameters": []
+        },
+        "options": {}
+      },
+      "id": "427ab926-50c7-4c19-b8d5-0930b4d26473",
+      "name": "Promoções",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        100
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "url": "https://joxdvvthdsilnuyriigh.supabase.co/rest/v1/v_cancelamentos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taxa_cancelamento_pct",
+              "value": "gt.8"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "96ace14e-cb98-49e7-ad06-6927889a8b4e",
+      "name": "Cancelamentos altos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        100
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Monta a \"comanda da semana\" de cada restaurante.\n// Todos os números vêm das views do Supabase; aqui só formatamos (nenhuma conta nova).\nconst resumo = $('Resumo semanal').all().map(i => i.json);\nconst alertas = $('Alerta de caixa').all().map(i => i.json);\nconst promos = $('Promoções').all().map(i => i.json);\nconst canc = $('Cancelamentos altos').all().map(i => i.json);\nconst nomes = {1: 'Brasa Burger', 2: 'Marmita da Lu', 3: 'Forno Pampulha'};\nconst brl = v => 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});\nconst dm = s => { const [y, m, d] = s.split('-'); return `${d}/${m}`; };\nconst addDias = (s, n) => { const d = new Date(s + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };\nconst linha = (rotulo, valor) => rotulo.padEnd(20, ' ') + valor.padStart(12, ' ');\nconst out = [];\nfor (const id of [1, 2, 3]) {\n  const semanas = resumo.filter(r => r.restaurante_id === id).sort((a, b) => b.semana.localeCompare(a.semana));\n  const s = semanas[1] || semanas[0]; // última semana completa (a mais recente vai só até 31/10)\n  const comanda = [\n    '================================',\n    `COMANDA DA SEMANA · ${dm(s.semana)}-${dm(addDias(s.semana, 6))}`,\n    `${nomes[id]} · ${s.pedidos_entregues} pedidos`,\n    '--------------------------------',\n    linha('Faturamento bruto', brl(s.faturamento_bruto)),\n    linha('(-) Descontos', brl(s.descontos)),\n    linha('(-) Taxas', brl(s.taxas_plataforma)),\n    linha('(-) Insumos', brl(s.custo_insumos)),\n    '--------------------------------',\n    linha('MARGEM REAL', brl(s.margem_contribuicao)),\n    '================================',\n  ].join('\\n');\n  const fatos = {\n    restaurante: nomes[id],\n    semana: s,\n    caixa_proximos_30_dias: alertas.find(a => a.restaurante_id === id) || null,\n    promocoes: promos.filter(p => p.restaurante_id === id),\n    turnos_com_cancelamento_acima_de_8pct: canc.filter(c => c.restaurante_id === id),\n  };\n  out.push({json: {restaurante_id: id, comanda, fatos: JSON.stringify(fatos)}});\n}\nreturn out;"
+      },
+      "id": "9fd553bb-0269-4eef-95cf-a141305ad6bf",
+      "name": "Montar comandas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é o Comanda, copiloto financeiro de restaurantes. Abaixo estão FATOS já calculados pelo sistema sobre um restaurante (dados sintéticos de demonstração; \"hoje\" = 31/10/2026).\n\nEscreva a seção \"Atenção esta semana\" para o dono, em português do Brasil:\n- No máximo 3 itens, do maior para o menor impacto em reais.\n- Cada item: 1 linha com o problema e o número que o comprova, e 1 linha começando com \"→\" com a ação sugerida.\n- Use SOMENTE números que aparecem nos fatos. Não faça contas novas e não invente valores.\n- Interpretação: margem_por_unidade negativa = a promoção dá prejuízo a cada unidade; primeiro_dia_negativo vazio = o caixa não fica negativo nos próximos 30 dias; dia_semana 1 = segunda ... 7 = domingo.\n- Se nada for relevante, diga em 1 linha que a semana está saudável.\n- Texto simples, sem tabelas, sem markdown, no máximo 1 emoji.\n\nFATOS:\n{{ $json.fatos }}"
+      },
+      "id": "745426bb-0c39-476f-b861-747ed0ceea02",
+      "name": "IA: atenção da semana",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1340,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "ac7bbdd6-4373-4c30-b5c6-963399735914",
+      "name": "Groq",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Junta a comanda (números do sistema) com o texto da IA, no formato HTML do Telegram.\nconst esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst base = $('Montar comandas').item.json;\nconst texto = `<pre>${esc(base.comanda)}</pre>\\n<b>Atenção esta semana</b>\\n${esc($json.text)}\\n\\n<i>Comanda · dados sintéticos de demonstração</i>`;\nreturn {json: {texto}};"
+      },
+      "id": "a75bc876-e598-4c36-9068-7c78467a2ab4",
+      "name": "Mensagem final",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1580,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "SEU_CHAT_ID",
+        "text": "={{ $json.texto }}",
+        "additionalFields": {
+          "parse_mode": "HTML",
+          "appendAttribution": false
+        }
+      },
+      "id": "32fe7125-ae4e-49a1-9de7-ea46ad4344aa",
+      "name": "Enviar no Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1800,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "Testar agora": {
+      "main": [
+        [
+          {
+            "node": "Resumo semanal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Toda segunda 8h": {
+      "main": [
+        [
+          {
+            "node": "Resumo semanal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "IA: atenção da semana",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resumo semanal": {
+      "main": [
+        [
+          {
+            "node": "Alerta de caixa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alerta de caixa": {
+      "main": [
+        [
+          {
+            "node": "Promoções",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Promoções": {
+      "main": [
+        [
+          {
+            "node": "Cancelamentos altos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancelamentos altos": {
+      "main": [
+        [
+          {
+            "node": "Montar comandas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar comandas": {
+      "main": [
+        [
+          {
+            "node": "IA: atenção da semana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA: atenção da semana": {
+      "main": [
+        [
+          {
+            "node": "Mensagem final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensagem final": {
+      "main": [
+        [
+          {
+            "node": "Enviar no Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

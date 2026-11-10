@@ -22,8 +22,8 @@ O resultado são decisões no escuro e a busca por crédito só quando já é ta
 |---|---|---|
 | **Camada de métricas** | Calcula margem por prato, resultado de promoções, cancelamentos e fluxo de caixa projetado. 100% determinística. | PostgreSQL (Supabase) — views SQL |
 | **API para o agente** | Cada view vira um endpoint REST que o agente consulta como ferramenta | Supabase REST (sem backend próprio) |
-| **Agente conversacional** | O dono pergunta em linguagem natural ("quanto lucrei no fim de semana?") e o agente consulta as ferramentas antes de responder | n8n AI Agent + Claude |
-| **Automação semanal** | Toda segunda: lê as métricas, gera um diagnóstico com até 3 ações priorizadas e envia ao dono | n8n (cron) + Claude + Telegram/e-mail |
+| **Agente conversacional** | O dono pergunta em linguagem natural ("quanto lucrei no fim de semana?") e o agente consulta as ferramentas antes de responder | n8n AI Agent + Groq (`gpt-oss-120b`) |
+| **Automação semanal** | Toda segunda: lê as métricas, gera um diagnóstico com até 3 ações priorizadas e envia ao dono | n8n (cron) + Groq + Telegram |
 | **Dashboard** | Painel com margem por prato, promoções e o gráfico de caixa projetado | Vibe coding (v0/Lovable/Cursor) + Vercel |
 | **Loop de feedback** | O dono marca cada recomendação como útil/não útil; isso alimenta a melhoria dos prompts | Tabela `feedback_recomendacoes` |
 
@@ -70,7 +70,7 @@ LLMs erram contas. Em finanças, um número inventado é inaceitável. Por isso:
                      ▼            ▼              ▼
              n8n: agente     n8n: relatório   Dashboard
              (chat Telegram)  semanal (cron)  (Vercel)
-                     └──────► Claude ◄─────────┘
+                     └──────►  LLM (Groq) ◄────┘
                                │
                      feedback do dono ──► tabela de feedback
 ```
@@ -118,7 +118,8 @@ Teste local com Postgres: `./reload.sh`.
 - [x] Modelo de dados + gerador sintético com padrões plantados
 - [x] Camada de métricas determinística (views SQL)
 - [ ] Supabase + endpoints REST
-- [ ] Agente n8n + Claude com ferramentas
+- [x] Workflows do n8n prontos para importar (`n8n/`)
+- [ ] Agente n8n + Groq com ferramentas, rodando no Telegram
 - [ ] Relatório semanal automático (n8n cron → Telegram)
 - [ ] Dashboard publicado
 - [ ] Evals: 20 perguntas com gabarito SQL, acurácia medida

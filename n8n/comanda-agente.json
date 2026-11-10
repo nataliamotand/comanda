@@ -1,0 +1,379 @@
+{
+  "name": "Comanda · Agente no Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "5df18f64-66d5-46da-af57-13108c76da58",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Você é o **Comanda**, copiloto financeiro de donos de restaurantes de delivery. Você conversa pelo Telegram, em português do Brasil, de forma simples, direta e cordial, como um analista financeiro de bolso.\n\n## Contexto\n- Data de referência (\"hoje\"): 31/10/2026. Os dados vão de 03/08/2026 a 31/10/2026; a projeção de caixa cobre os 30 dias seguintes.\n- Restaurantes disponíveis (dados SINTÉTICOS de demonstração):\n  - 1 = Brasa Burger (hamburgueria)\n  - 2 = Marmita da Lu (marmitaria)\n  - 3 = Forno Pampulha (pizzaria)\n- Se o usuário não disser de qual restaurante está falando, pergunte antes de consultar.\n\n## Regra de ouro: quem calcula é o sistema, você explica\n1. **Nunca invente, estime ou calcule números.** Todo valor que você citar precisa vir de uma ferramenta chamada nesta conversa.\n2. **Sempre chame a ferramenta adequada antes de responder** sobre lucro, margem, promoções, cancelamentos, vendas ou caixa.\n3. Não faça contas além de comparar valores que a ferramenta já devolveu. Se a pergunta exigir um número que nenhuma ferramenta entrega, diga com clareza que esse dado não está disponível.\n4. Se uma ferramenta falhar ou voltar vazia, diga isso. Não preencha com suposições.\n\n## Ferramentas\n- `margem_por_prato`: margem de contribuição de cada prato (receita líquida − comissão − taxa de pagamento − insumos).\n- `resultado_promocoes`: resultado de cada promoção, incluindo a margem por unidade vendida com desconto.\n- `resumo_semanal`: o \"fechamento\" das últimas semanas (faturamento, descontos, taxas, insumos, margem de contribuição, pedidos).\n- `cancelamentos`: taxa de cancelamento por dia da semana e turno, e insumos perdidos.\n- `alerta_caixa`: primeiro dia com saldo projetado negativo e menor saldo dos próximos 30 dias.\n- `fluxo_caixa`: entradas, saídas e saldo projetado dia a dia nos próximos 30 dias.\n\n## Como responder\n- Comece pela resposta direta, em 1 ou 2 frases. Depois, no máximo 3 a 5 linhas de detalhe.\n- Valores em reais no formato brasileiro (R$ 1.234,56). Datas no formato dd/mm.\n- \"Margem real\" = margem de contribuição (antes de custos fixos como aluguel e folha).\n- Quando houver um problema relevante, termine com **até 3 ações recomendadas**, em ordem de impacto em reais, sempre explicando o número que sustenta cada uma.\n- Recomendações são **apoio à decisão**, não ordens. Não dê conselhos de investimento nem fale como contador.\n- Ao final de respostas com números, indique a fonte em uma linha curta, por exemplo: \"Fonte: resultado_promocoes\".\n- Mensagens curtas, próprias para celular. Sem tabelas largas. Pode usar listas simples e no máximo 1 ou 2 emojis.\n\n## Limites\n- Você só fala sobre as finanças e a operação dos 3 restaurantes de demonstração. Para outros assuntos, explique gentilmente o que você consegue fazer.\n- As taxas de comissão e de pagamento usadas são ilustrativas e não representam as condições de nenhuma plataforma real. Se perguntarem, diga isso.\n",
+          "maxIterations": 8
+        }
+      },
+      "id": "01d8f473-75f7-4b85-ae0d-0db59de834d6",
+      "name": "Agente Comanda",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        300,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "bca2ab8c-6460-4671-9612-44901236b188",
+      "name": "Groq",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        100,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "id": "ff7decb6-a5e9-454c-904c-5a4c5f4883a3",
+      "name": "Memória",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        260,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Margem de contribuição de cada prato do restaurante (unidades vendidas, receita, descontos, taxas, insumos, margem em R$ e em %). Use para perguntas sobre lucro por prato, prato mais/menos lucrativo.",
+        "url": "https://joxdvvthdsilnuyriigh.supabase.co/rest/v1/v_margem_prato",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "restaurante_id",
+              "value": "=eq.{{ $fromAI('restaurante_id', 'ID do restaurante: 1 = Brasa Burger, 2 = Marmita da Lu, 3 = Forno Pampulha', 'number') }}"
+            },
+            {
+              "name": "order",
+              "value": "margem_contribuicao.asc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "210a44d3-4c99-4f58-af7e-be06987fc431",
+      "name": "margem_por_prato",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Resultado de cada promoção do restaurante: unidades vendidas com desconto, desconto total, margem total e margem por unidade. Margem negativa = a promoção dá prejuízo.",
+        "url": "https://joxdvvthdsilnuyriigh.supabase.co/rest/v1/v_promocao_resultado",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "restaurante_id",
+              "value": "=eq.{{ $fromAI('restaurante_id', 'ID do restaurante: 1 = Brasa Burger, 2 = Marmita da Lu, 3 = Forno Pampulha', 'number') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "60069430-9d21-4785-9cf2-80251b8f019c",
+      "name": "resultado_promocoes",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        580,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Fechamento das últimas semanas do restaurante: pedidos entregues e cancelados, faturamento bruto, descontos, taxas da plataforma, custo de insumos e margem de contribuição. A semana mais recente pode estar incompleta (dados até 31/10).",
+        "url": "https://joxdvvthdsilnuyriigh.supabase.co/rest/v1/v_resumo_semanal",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "restaurante_id",
+              "value": "=eq.{{ $fromAI('restaurante_id', 'ID do restaurante: 1 = Brasa Burger, 2 = Marmita da Lu, 3 = Forno Pampulha', 'number') }}"
+            },
+            {
+              "name": "order",
+              "value": "semana.desc"
+            },
+            {
+              "name": "limit",
+              "value": "4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3c3406ea-1f99-429c-8f35-9a852500a09e",
+      "name": "resumo_semanal",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        740,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Taxa de cancelamento do restaurante por dia da semana (1 = segunda ... 7 = domingo) e turno, com insumos perdidos em R$.",
+        "url": "https://joxdvvthdsilnuyriigh.supabase.co/rest/v1/v_cancelamentos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "restaurante_id",
+              "value": "=eq.{{ $fromAI('restaurante_id', 'ID do restaurante: 1 = Brasa Burger, 2 = Marmita da Lu, 3 = Forno Pampulha', 'number') }}"
+            },
+            {
+              "name": "order",
+              "value": "taxa_cancelamento_pct.desc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a679bd0d-4dcf-4eb4-ab9b-1276c34d6928",
+      "name": "cancelamentos",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Alerta de caixa dos próximos 30 dias: primeiro dia com saldo projetado negativo (vazio = não fica negativo), menor saldo projetado e o dia dele.",
+        "url": "https://joxdvvthdsilnuyriigh.supabase.co/rest/v1/v_alerta_caixa",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "restaurante_id",
+              "value": "=eq.{{ $fromAI('restaurante_id', 'ID do restaurante: 1 = Brasa Burger, 2 = Marmita da Lu, 3 = Forno Pampulha', 'number') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bc1aed4b-7677-428b-9b74-3b6752165db0",
+      "name": "alerta_caixa",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1060,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Projeção diária de caixa dos próximos 30 dias: entradas, saídas e saldo projetado de cada dia. Use para explicar POR QUE o caixa aperta e em quais dias.",
+        "url": "https://joxdvvthdsilnuyriigh.supabase.co/rest/v1/v_fluxo_caixa",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "restaurante_id",
+              "value": "=eq.{{ $fromAI('restaurante_id', 'ID do restaurante: 1 = Brasa Burger, 2 = Marmita da Lu, 3 = Forno Pampulha', 'number') }}"
+            },
+            {
+              "name": "order",
+              "value": "dia.asc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "944228c4-85ba-461c-b557-db06261901bd",
+      "name": "fluxo_caixa",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1220,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "1857518b-151a-4311-a949-5fcf8d1228dd",
+      "name": "Responder no Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        700,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Agente Comanda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Comanda": {
+      "main": [
+        [
+          {
+            "node": "Responder no Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Comanda",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memória": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente Comanda",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "margem_por_prato": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Comanda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "resultado_promocoes": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Comanda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "resumo_semanal": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Comanda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cancelamentos": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Comanda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "alerta_caixa": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Comanda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fluxo_caixa": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Comanda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}
