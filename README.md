@@ -117,10 +117,10 @@ Teste local com Postgres: `./reload.sh`.
 
 - [x] Modelo de dados + gerador sintético com padrões plantados
 - [x] Camada de métricas determinística (views SQL)
-- [ ] Supabase + endpoints REST
+- [x] Supabase + endpoints REST (PostgREST, RLS só-leitura)
 - [x] Workflows do n8n prontos para importar (`n8n/`)
-- [ ] Agente n8n + Groq com ferramentas, rodando no Telegram
-- [ ] Relatório semanal automático (n8n cron → Telegram)
+- [x] Agente n8n + Groq com 6 ferramentas, rodando no Telegram
+- [x] Relatório semanal automático (n8n, toda segunda 8h → Telegram)
 - [ ] Dashboard publicado
 - [ ] Evals: 20 perguntas com gabarito SQL, acurácia medida
 - [ ] Medição de tempo: fechamento manual em planilha × agente

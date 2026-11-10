@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "3c066bed-7d50-4629-b9cf-fa1727b5c2ad",
+      "id": "59408ec4-0652-43d8-9b50-d5539c22fab8",
       "name": "Testar agora",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -26,7 +26,7 @@
           ]
         }
       },
-      "id": "00860bc1-8f09-4fd5-bc5a-b543ee4673a9",
+      "id": "877b3cae-e674-40fb-ae98-f5fdd7536f96",
       "name": "Toda segunda 8h",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
@@ -51,7 +51,7 @@
         },
         "options": {}
       },
-      "id": "14f13f93-bbc7-41c9-8560-bb7a243eaf84",
+      "id": "85b1eb9a-5c05-4eae-86ae-7e656d5485e7",
       "name": "Resumo semanal",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -72,7 +72,7 @@
         },
         "options": {}
       },
-      "id": "12ad104d-0e00-4f67-b5ab-b858ad008a11",
+      "id": "1929f6cc-6338-4c83-8373-1ee4c170b69f",
       "name": "Alerta de caixa",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -93,7 +93,7 @@
         },
         "options": {}
       },
-      "id": "427ab926-50c7-4c19-b8d5-0930b4d26473",
+      "id": "5572cf9c-b65b-4180-86a9-0333dbd3343b",
       "name": "Promoções",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -119,7 +119,7 @@
         },
         "options": {}
       },
-      "id": "96ace14e-cb98-49e7-ad06-6927889a8b4e",
+      "id": "513820a8-4eb4-41da-a898-4a4e5e430255",
       "name": "Cancelamentos altos",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -131,9 +131,9 @@
     },
     {
       "parameters": {
-        "jsCode": "// Monta a \"comanda da semana\" de cada restaurante.\n// Todos os números vêm das views do Supabase; aqui só formatamos (nenhuma conta nova).\nconst resumo = $('Resumo semanal').all().map(i => i.json);\nconst alertas = $('Alerta de caixa').all().map(i => i.json);\nconst promos = $('Promoções').all().map(i => i.json);\nconst canc = $('Cancelamentos altos').all().map(i => i.json);\nconst nomes = {1: 'Brasa Burger', 2: 'Marmita da Lu', 3: 'Forno Pampulha'};\nconst brl = v => 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});\nconst dm = s => { const [y, m, d] = s.split('-'); return `${d}/${m}`; };\nconst addDias = (s, n) => { const d = new Date(s + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };\nconst linha = (rotulo, valor) => rotulo.padEnd(20, ' ') + valor.padStart(12, ' ');\nconst out = [];\nfor (const id of [1, 2, 3]) {\n  const semanas = resumo.filter(r => r.restaurante_id === id).sort((a, b) => b.semana.localeCompare(a.semana));\n  const s = semanas[1] || semanas[0]; // última semana completa (a mais recente vai só até 31/10)\n  const comanda = [\n    '================================',\n    `COMANDA DA SEMANA · ${dm(s.semana)}-${dm(addDias(s.semana, 6))}`,\n    `${nomes[id]} · ${s.pedidos_entregues} pedidos`,\n    '--------------------------------',\n    linha('Faturamento bruto', brl(s.faturamento_bruto)),\n    linha('(-) Descontos', brl(s.descontos)),\n    linha('(-) Taxas', brl(s.taxas_plataforma)),\n    linha('(-) Insumos', brl(s.custo_insumos)),\n    '--------------------------------',\n    linha('MARGEM REAL', brl(s.margem_contribuicao)),\n    '================================',\n  ].join('\\n');\n  const fatos = {\n    restaurante: nomes[id],\n    semana: s,\n    caixa_proximos_30_dias: alertas.find(a => a.restaurante_id === id) || null,\n    promocoes: promos.filter(p => p.restaurante_id === id),\n    turnos_com_cancelamento_acima_de_8pct: canc.filter(c => c.restaurante_id === id),\n  };\n  out.push({json: {restaurante_id: id, comanda, fatos: JSON.stringify(fatos)}});\n}\nreturn out;"
+        "jsCode": "// Monta a \"comanda da semana\" de cada restaurante.\n// Todos os números vêm das views do Supabase; aqui só formatamos (nenhuma conta nova).\nconst resumo = $('Resumo semanal').all().map(i => i.json);\nconst alertas = $('Alerta de caixa').all().map(i => i.json);\nconst promos = $('Promoções').all().map(i => i.json);\nconst canc = $('Cancelamentos altos').all().map(i => i.json);\nconst nomes = {1: 'Brasa Burger', 2: 'Marmita da Lu', 3: 'Forno Pampulha'};\nconst brl = v => 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});\nconst dm = s => { const [y, m, d] = s.split('-'); return `${d}/${m}`; };\nconst addDias = (s, n) => { const d = new Date(s + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };\nconst linha = (rotulo, valor) => rotulo.padEnd(20, ' ') + valor.padStart(12, ' ');\nconst out = [];\nfor (const id of [1, 2, 3]) {\n  const semanas = resumo.filter(r => r.restaurante_id === id).sort((a, b) => b.semana.localeCompare(a.semana));\n  const s = semanas[1] || semanas[0]; // última semana completa (a mais recente vai só até 31/10)\n  const comanda = [\n    '================================',\n    `COMANDA DA SEMANA · ${dm(s.semana)}-${dm(addDias(s.semana, 6))}`,\n    `${nomes[id]} · ${s.pedidos_entregues} pedidos`,\n    '--------------------------------',\n    linha('Faturamento bruto', brl(s.faturamento_bruto)),\n    linha('(-) Descontos', brl(s.descontos)),\n    linha('(-) Taxas', brl(s.taxas_plataforma)),\n    linha('(-) Insumos', brl(s.custo_insumos)),\n    '--------------------------------',\n    linha('MARGEM REAL', brl(s.margem_contribuicao)),\n    '================================',\n  ].join('\\n');\n  const dias = {1: 'segunda', 2: 'terça', 3: 'quarta', 4: 'quinta', 5: 'sexta', 6: 'sábado', 7: 'domingo'};\n  const cx = alertas.find(a => a.restaurante_id === id);\n  const f = [];\n  f.push(`Semana ${dm(s.semana)}-${dm(addDias(s.semana, 6))}: faturamento ${brl(s.faturamento_bruto)}, descontos ${brl(s.descontos)}, taxas ${brl(s.taxas_plataforma)}, insumos ${brl(s.custo_insumos)}, margem real ${brl(s.margem_contribuicao)}.`);\n  if (cx && cx.primeiro_dia_negativo) {\n    f.push(`Caixa projetado (próximos 30 dias): fica negativo a partir de ${dm(cx.primeiro_dia_negativo)}; menor saldo ${brl(cx.menor_saldo_projetado)} em ${dm(cx.dia_menor_saldo)}.`);\n  } else {\n    f.push('Caixa projetado (próximos 30 dias): não fica negativo.');\n  }\n  for (const p of promos.filter(p => p.restaurante_id === id)) {\n    f.push(`Promoção \"${p.promocao}\" (período 03/08-31/10): ${p.unidades_vendidas} unidades, desconto total ${brl(p.desconto_total)}, margem das vendas com desconto ${brl(p.margem_contribuicao)}, margem por unidade ${brl(p.margem_por_unidade)}.`);\n  }\n  for (const c of canc.filter(c => c.restaurante_id === id)) {\n    f.push(`Cancelamentos (período 03/08-31/10): ${dias[c.dia_semana]}, ${c.turno}: ${String(c.taxa_cancelamento_pct).replace('.', ',')}% (${c.cancelados} de ${c.pedidos} pedidos), insumos perdidos ${brl(c.insumos_perdidos)}.`);\n  }\n  const fatos = f.map(x => '- ' + x).join('\\n');\n  out.push({json: {restaurante_id: id, comanda, fatos}});\n}\nreturn out;"
       },
-      "id": "9fd553bb-0269-4eef-95cf-a141305ad6bf",
+      "id": "616ef98a-4626-44f9-8cbe-76fabc9c01fb",
       "name": "Montar comandas",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -145,9 +145,9 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Você é o Comanda, copiloto financeiro de restaurantes. Abaixo estão FATOS já calculados pelo sistema sobre um restaurante (dados sintéticos de demonstração; \"hoje\" = 31/10/2026).\n\nEscreva a seção \"Atenção esta semana\" para o dono, em português do Brasil:\n- No máximo 3 itens, do maior para o menor impacto em reais.\n- Cada item: 1 linha com o problema e o número que o comprova, e 1 linha começando com \"→\" com a ação sugerida.\n- Use SOMENTE números que aparecem nos fatos. Não faça contas novas e não invente valores.\n- Interpretação: margem_por_unidade negativa = a promoção dá prejuízo a cada unidade; primeiro_dia_negativo vazio = o caixa não fica negativo nos próximos 30 dias; dia_semana 1 = segunda ... 7 = domingo.\n- Se nada for relevante, diga em 1 linha que a semana está saudável.\n- Texto simples, sem tabelas, sem markdown, no máximo 1 emoji.\n\nFATOS:\n{{ $json.fatos }}"
+        "text": "=Você é o Comanda, copiloto financeiro de restaurantes. Abaixo estão FATOS já calculados e formatados pelo sistema sobre um restaurante (dados sintéticos de demonstração; \"hoje\" = 31/10/2026).\n\nEscreva os itens da seção \"Atenção esta semana\" para o dono, em português do Brasil:\n- NÃO escreva título; comece direto no primeiro item.\n- No máximo 3 itens, do maior para o menor impacto em reais.\n- Cada item: 1 linha começando com \"•\" com o problema e o número que o comprova, e 1 linha começando com \"→\" com a ação sugerida.\n- Copie números e datas EXATAMENTE como aparecem nos fatos (já estão em R$ e dd/mm). Não faça contas, não arredonde, não invente valores, metas ou percentuais.\n- Diga o período de cada número (a semana ou o período 03/08-31/10).\n- Margem por unidade negativa = a promoção dá prejuízo a cada unidade vendida com desconto.\n- Caixa: o problema começa no dia em que fica negativo; cite também o menor saldo e o dia dele.\n- Não cite taxas da plataforma como problema (são ilustrativas e iguais para todos).\n- Se nada for relevante, diga em 1 linha que a semana está saudável.\n- Texto simples, sem markdown, no máximo 1 emoji.\n\nFATOS:\n{{ $json.fatos }}"
       },
-      "id": "745426bb-0c39-476f-b861-747ed0ceea02",
+      "id": "5cf485b0-5121-425a-8a5f-33249aa6d93e",
       "name": "IA: atenção da semana",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
@@ -163,7 +163,7 @@
           "temperature": 0.2
         }
       },
-      "id": "ac7bbdd6-4373-4c30-b5c6-963399735914",
+      "id": "56086734-c326-4218-9316-e020fb98ab77",
       "name": "Groq",
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
@@ -177,7 +177,7 @@
         "mode": "runOnceForEachItem",
         "jsCode": "// Junta a comanda (números do sistema) com o texto da IA, no formato HTML do Telegram.\nconst esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst base = $('Montar comandas').item.json;\nconst texto = `<pre>${esc(base.comanda)}</pre>\\n<b>Atenção esta semana</b>\\n${esc($json.text)}\\n\\n<i>Comanda · dados sintéticos de demonstração</i>`;\nreturn {json: {texto}};"
       },
-      "id": "a75bc876-e598-4c36-9068-7c78467a2ab4",
+      "id": "9cb30c3f-652c-4181-8620-1af55c1af298",
       "name": "Mensagem final",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -195,7 +195,7 @@
           "appendAttribution": false
         }
       },
-      "id": "32fe7125-ae4e-49a1-9de7-ea46ad4344aa",
+      "id": "c3f61a6d-cce9-4736-b3a5-5e51f25306b9",
       "name": "Enviar no Telegram",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
