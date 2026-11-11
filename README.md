@@ -103,7 +103,7 @@ LLMs erram contas. Em finanças, um número inventado é inaceitável. Por isso:
 | **Zero número inventado** | **4/12** | **12/12** |
 | Interpretação correta | 7/12 | 9/12 |
 
-O que a rodada 1 revelou: o agente buscava os números com precisão, mas **inventava contas e cenários ao sugerir ações** ("reduzir 5% economizaria ≈ R$ 500" — conta errada), tirava conclusões que os próprios dados contradiziam e, em um caso, **trouxe da memória um valor de outro restaurante**. O prompt v5 tornou as ações qualitativas, limitou os números aos de ferramentas chamadas na pergunta atual e explicitou regras de interpretação. O v6 corrigiu os 3 erros restantes (mapa do dia da semana, uso de "por unidade", o que é taxa "alta"); na rodada 3, as perguntas refeitas passaram.
+O que a rodada 1 revelou: o agente buscava os números com precisão, mas **inventava contas e cenários ao sugerir ações** ("reduzir 5% economizaria ≈ R$ 500" — conta errada), tirava conclusões que os próprios dados contradiziam e, em um caso, **trouxe da memória um valor de outro restaurante**. O prompt v5 tornou as ações qualitativas, limitou os números aos de ferramentas chamadas na pergunta atual e explicitou regras de interpretação. O v6 corrigiu os 3 erros restantes (mapa do dia da semana, uso de "por unidade", o que é taxa "alta"); na rodada 3, as 3 perguntas refeitas passaram nos 3 critérios.
 
 ## Por que isso importa para uma plataforma de delivery
 

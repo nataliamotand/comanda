@@ -70,12 +70,12 @@ Três critérios por pergunta: **números corretos** (o diagnóstico bate com o 
 
 **Correções no prompt v6:** mapa explícito de `dia_semana`; "alta" só acima de 8%; proibido falar "por unidade" sem o campo correspondente. Perguntas 4, 9 e 10 a repetir.
 
-### Rodada 3 — prompt v6 (só as que falharam)
+### Rodada 3 — prompt v6 (só as que falharam: 3/3 corretas nos 3 critérios)
 
 | # | Números corretos | Zero número inventado | Interpretação correta | Observação |
 |---|---|---|---|---|
 | 4 | ✅ | ✅ | ✅ | Só margem total e %, sem "por unidade" |
 | 9 | ✅ | ✅ | ✅ | Destacou só sexta à noite e comparou com o limite de 8% |
-| 10 | — | — | — | Não rodou: limite diário de tokens do Groq atingido (200 mil/dia). A repetir |
+| 10 | ✅ | ✅ | ✅ | Quinta à noite, 13 cancelados, 4,8%, R$ 465,30 (no dia anterior não rodou: cota diária do Groq esgotada) |
 
 Falhas e correções anteriores: ver também [`n8n/APRENDIZADOS.md`](../n8n/APRENDIZADOS.md).
